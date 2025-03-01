@@ -1,4 +1,4 @@
-/* General Reset */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +6,6 @@
     font-family: Arial, sans-serif;
 }
 
-/* Navbar Styling */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -20,13 +19,11 @@
     z-index: 1000;
 }
 
-/* Logo */
 .logo {
     font-size: 1.5rem;
     font-weight: bold;
 }
 
-/* Notification Icon */
 .notification-container {
     position: relative;
     cursor: pointer;
