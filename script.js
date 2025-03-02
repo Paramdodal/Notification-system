@@ -15,6 +15,8 @@ async function fetchNotifications(page = 1, append = false) {
         renderNotifications(result.data, append);
 
         
+        updateNotificationCount(result.unreadCount);
+
         if (page * limit >= result.total) {
             document.getElementById("load-more").style.display = "none";
         } else {
@@ -24,6 +26,7 @@ async function fetchNotifications(page = 1, append = false) {
         console.error("Error fetching notifications:", error);
     }
 }
+
 
 
 function renderNotifications(notifications, append) {
@@ -40,8 +43,8 @@ function renderNotifications(notifications, append) {
         li.textContent = (notification.status === "unread" ? "🔵 " : "✅ ") + notification.user + " " + notification.action;
         li.classList.add(notification.status);
         li.setAttribute("data-id", notification._id);
-        li.setAttribute("data-full-message", notification.fullMessage); // Store full message in attribute
-        li.onclick = () => openNotification(notification._id, li, notification.fullMessage); // Pass fullMessage
+        li.setAttribute("data-full-message", notification.fullMessage); 
+        li.onclick = () => openNotification(notification._id, li, notification.fullMessage); 
         notificationList.appendChild(li);
     });
 
@@ -120,8 +123,7 @@ function toggleNotifications() {
 }
 
 
-function updateNotificationCount() {
-    const unreadCount = document.querySelectorAll("#notification-list li.unread").length;
+function updateNotificationCount(unreadCount) {
     const countElement = document.getElementById("notification-count");
 
     if (unreadCount > 0) {
@@ -131,6 +133,7 @@ function updateNotificationCount() {
         countElement.style.display = "none"; 
     }
 }
+
 
 
 document.addEventListener("click", function (event) {
