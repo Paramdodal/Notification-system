@@ -26,6 +26,61 @@
     font-weight: bold;
 }
 
+#search-bar {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 2px solid #4267B2;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#search-bar:focus {
+    border-color: #365899;
+    box-shadow: 0px 4px 10px rgba(54, 88, 153, 0.4);
+}
+
+#notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#notification-list li {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+#notification-list li:hover {
+    background: #f0f2f5;
+}
+
+#notification-list li.unread {
+    font-weight: bold;
+    color: #365899;
+}
+
+#notification-list li.read {
+    color: #777;
+}
+
+#notification-list li:last-child {
+    border-bottom: none;
+}
 
 .notification-container {
     position: relative;
@@ -161,35 +216,57 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 1001;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 1001;
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .modal-content {
     background: white;
-    padding: 20px;
-    width: 80%;
+    width: 90%;
     max-width: 400px;
-    text-align: center;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
     position: relative;
+    transform: scale(0.9);
+    animation: zoomIn 0.3s ease-in-out forwards;
 }
+
 
 .close {
     position: absolute;
-    top: 10px;
+    top: 12px;
     right: 15px;
-    font-size: 1.5rem;
+    font-size: 22px;
     cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease, transform 0.2s ease-in-out;
 }
+
+.close:hover {
+    color: #365899;
+    transform: scale(1.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
 
 body {
     font-family: Arial, sans-serif;
