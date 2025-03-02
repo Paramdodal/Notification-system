@@ -124,18 +124,25 @@ function updateNotificationCount() {
 document.addEventListener("click", function (event) {
     const dropdown = document.getElementById("notification-dropdown");
     const icon = document.querySelector(".notification-icon");
-    if (!icon.contains(event.target) && !dropdown.contains(event.target)) {
+    const modal = document.getElementById("notification-modal");
+
+    if (!icon.contains(event.target) && !dropdown.contains(event.target) && !modal.contains(event.target)) {
         dropdown.style.display = "none";
     }
 });
 
 
+
 document.getElementById("notification-modal").addEventListener("click", function (event) {
     const modalContent = document.querySelector(".modal-content");
+
     if (!modalContent.contains(event.target)) {
         closeNotification();
     }
+
+    event.stopPropagation();
 });
+
 
 
 document.addEventListener("DOMContentLoaded", () => fetchNotifications());
