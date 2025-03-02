@@ -2,11 +2,10 @@ const API_URL = "http://localhost:5000/notifications"; // Backend API URL
 let currentPage = 1;
 const limit = 5;
 
-
-async function fetchNotifications(page = 1, append = false, searchQuery = "") {
+async function fetchNotifications(page = 1, append = false) {
     try {
-        console.log(`Fetching notifications for page ${page}, search: ${searchQuery}`);
-        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`);
+        console.log(`Fetching notifications for page ${page}...`);
+        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}`);
         if (!response.ok) throw new Error("Failed to fetch notifications");
 
         const result = await response.json();
@@ -22,6 +21,7 @@ async function fetchNotifications(page = 1, append = false, searchQuery = "") {
         console.error("Error fetching notifications:", error);
     }
 }
+
 
 function renderNotifications(notifications, append) {
     const notificationList = document.getElementById("notification-list");
@@ -131,10 +131,14 @@ function loadMore() {
 
 function toggleNotifications() {
     const dropdown = document.getElementById("notification-dropdown");
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 
     if (dropdown.style.display === "block") {
-        fetchNotifications(); 
+        dropdown.style.display = "none";
+    } else {
+        dropdown.style.display = "block";
+
+        currentPage = 1;
+        fetchNotifications(currentPage, false); 
     }
 }
 
