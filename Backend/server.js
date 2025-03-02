@@ -53,7 +53,6 @@ app.get("/notifications", async (req, res) => {
 });
 
 
-
 app.put("/notifications/:id/read", async (req, res) => {
     try {
         const notification = await Notification.findByIdAndUpdate(
