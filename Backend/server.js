@@ -30,18 +30,21 @@ app.get("/notifications", async (req, res) => {
         let limit = parseInt(req.query.limit) || 5;
         let skip = (page - 1) * limit;
 
-        const total = await Notification.countDocuments();
+        const total = await Notification.countDocuments(); 
+        const unreadCount = await Notification.countDocuments({ status: "unread" }); 
+
         const notifications = await Notification.find()
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1 }) 
             .skip(skip)
             .limit(limit)
             .select("user action fullMessage status createdAt"); 
 
-        res.json({ total, page, limit, data: notifications });
+        res.json({ total, unreadCount, page, limit, data: notifications });
     } catch (error) {
         res.status(500).json({ message: "Error fetching notifications", error });
     }
 });
+
 
 
 
