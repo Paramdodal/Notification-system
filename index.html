@@ -23,9 +23,14 @@
                     <span>Notifications</span>
                     <button onclick="markAllRead()">Mark all as read</button>
                 </div>
-                <input type="text" id="search-bar" placeholder="Search notifications..." oninput="searchNotifications()" />
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder=" Search notifications..." onkeyup="handleSearch()">
+                    <button class="search-btn" onclick="handleSearch()">Search</button>
+                    <button class="clear-btn" onclick="clearSearch()"> Clear</button>
+                </div>
+                
                 <ul id="notification-list"></ul>
-                <button id="load-more" onclick="loadMore()">Load More</button> <!-- Load More Button -->
+                <button id="load-more" onclick="loadMore()">Load More</button>
             </div>
             
     </nav>
