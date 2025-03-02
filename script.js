@@ -28,7 +28,7 @@ async function fetchNotifications(page = 1, append = false) {
 
 function renderNotifications(notifications, append) {
     const notificationList = document.getElementById("notification-list");
-    if (!append) notificationList.innerHTML = ""; // Clear the list if not appending
+    if (!append) notificationList.innerHTML = ""; 
 
     if (notifications.length === 0) {
         notificationList.innerHTML = "<li>No new notifications</li>";
@@ -50,7 +50,7 @@ function renderNotifications(notifications, append) {
 
 
 
-async function openNotification(notificationId, element, fullMessage) {
+async function openNotification(notificationId, element, fullMessage, openModal = true) {
     try {
         const response = await fetch(`${API_URL}/${notificationId}/read`, {
             method: "PUT",
@@ -64,16 +64,19 @@ async function openNotification(notificationId, element, fullMessage) {
 
         updateNotificationCount();
 
-        const notificationMessage = document.getElementById("notification-message");
-        const notificationModal = document.getElementById("notification-modal");
+        if (openModal) {
+            const notificationMessage = document.getElementById("notification-message");
+            const notificationModal = document.getElementById("notification-modal");
 
-        notificationMessage.textContent = fullMessage;
-        notificationModal.style.display = "flex";
+            notificationMessage.textContent = fullMessage;
+            notificationModal.style.display = "flex";
+        }
 
     } catch (error) {
         console.error("Error updating notification:", error);
     }
 }
+
 
 
 
@@ -83,13 +86,22 @@ function closeNotification() {
 
 
 async function markAllRead() {
-    const notifications = document.querySelectorAll("#notification-list li.unread");
-    
-    for (let item of notifications) {
-        const notificationId = item.getAttribute("data-id");
-        await openNotification(notificationId, item, item.textContent.substring(2));
+    try {
+        const response = await fetch(`${API_URL}/read-all`, { method: "PUT" });
+        if (!response.ok) throw new Error("Failed to mark all as read");
+
+        document.querySelectorAll("#notification-list li.unread").forEach((item) => {
+            item.classList.remove("unread");
+            item.innerHTML = "✅ " + item.textContent.substring(2);
+        });
+
+        updateNotificationCount();
+
+    } catch (error) {
+        console.error("Error marking all notifications as read:", error);
     }
 }
+
 
 
 function loadMore() {
