@@ -59,13 +59,11 @@ async function openNotification(notificationId, element, fullMessage) {
 
         if (!response.ok) throw new Error("Failed to update notification");
 
-        // Update UI
         element.classList.remove("unread");
         element.innerHTML = "✅ " + element.textContent.substring(2);
 
         updateNotificationCount();
 
-        // Show full message in modal
         const notificationMessage = document.getElementById("notification-message");
         const notificationModal = document.getElementById("notification-modal");
 
