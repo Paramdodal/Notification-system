@@ -14,9 +14,9 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 //  Schema
 const notificationSchema = new mongoose.Schema({
-    user: String, 
-    action: String, 
-    fullMessage: String, 
+    user: String, // e.g., "Aryan"
+    action: String, // e.g., "commented on your photo"
+    fullMessage: String, // e.g., "Aryan liked the photo and commented: 'Nice!'"
     status: { type: String, default: "unread" }, 
     createdAt: { type: Date, default: Date.now }
 });
@@ -35,7 +35,8 @@ app.get("/notifications", async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .select("user action fullMessage status createdAt"); 
+            .select("user action fullMessage status createdAt"); // Fetch all necessary fields
+
         res.json({ total, page, limit, data: notifications });
     } catch (error) {
         res.status(500).json({ message: "Error fetching notifications", error });
@@ -44,23 +45,19 @@ app.get("/notifications", async (req, res) => {
 
 
 
-app.put("/notifications/:id/read", async (req, res) => {
+app.put("/notifications/read-all", async (req, res) => {
     try {
-        const notification = await Notification.findByIdAndUpdate(
-            req.params.id,
-            { status: "read" },
-            { new: true }
+        const result = await Notification.updateMany(
+            { status: "unread" }, 
+            { status: "read" }
         );
 
-        if (!notification) {
-            return res.status(404).json({ message: "Notification not found" });
-        }
-
-        res.json({ message: "Notification marked as read", notification });
+        res.json({ message: "All notifications marked as read", updatedCount: result.modifiedCount });
     } catch (error) {
-        res.status(500).json({ message: "Error updating notification", error });
+        res.status(500).json({ message: "Error marking notifications as read", error });
     }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
