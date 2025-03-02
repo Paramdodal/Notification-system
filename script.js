@@ -4,8 +4,10 @@ const limit = 5;
 
 async function fetchNotifications(page = 1, append = false) {
     try {
-        console.log(`Fetching notifications for page ${page}...`);
-        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}`);
+        const searchQuery = document.getElementById("search-input").value.trim();
+        console.log(`Fetching notifications for page ${page}... Search: ${searchQuery}`);
+
+        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) throw new Error("Failed to fetch notifications");
 
         const result = await response.json();
@@ -22,6 +24,18 @@ async function fetchNotifications(page = 1, append = false) {
     }
 }
 
+let debounceTimer;
+function handleSearch() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        currentPage = 1;
+        fetchNotifications(currentPage, false);
+    }, 500); 
+}
+function clearSearch() {
+    document.getElementById("search-input").value = "";
+    handleSearch();
+}
 
 function renderNotifications(notifications, append) {
     const notificationList = document.getElementById("notification-list");
@@ -48,11 +62,6 @@ function renderNotifications(notifications, append) {
     });
 
     updateNotificationCount();
-}
-
-function searchNotifications() {
-    const searchQuery = document.getElementById("search-bar").value;
-    fetchNotifications(1, false, searchQuery); 
 }
 
 
