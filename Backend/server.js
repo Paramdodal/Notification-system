@@ -31,7 +31,7 @@ app.get("/notifications", async (req, res) => {
         let skip = (page - 1) * limit;
 
         const total = await Notification.countDocuments(); 
-        const unreadCount = await Notification.countDocuments({ status: "unread" }); 
+        const unreadCount = await Notification.countDocuments({ status: "unread" });
 
         const notifications = await Notification.find()
             .sort({ createdAt: -1 }) 
@@ -46,21 +46,23 @@ app.get("/notifications", async (req, res) => {
 });
 
 
-
-
-app.put("/notifications/read-all", async (req, res) => {
+app.put("/notifications/:id/read", async (req, res) => {
     try {
-        const result = await Notification.updateMany(
-            { status: "unread" }, 
-            { status: "read" }
+        const notification = await Notification.findByIdAndUpdate(
+            req.params.id,
+            { status: "read" },
+            { new: true } 
         );
 
-        res.json({ message: "All notifications marked as read", updatedCount: result.modifiedCount });
+        if (!notification) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+
+        res.json({ message: "Notification marked as read", notification });
     } catch (error) {
-        res.status(500).json({ message: "Error marking notifications as read", error });
+        res.status(500).json({ message: "Error marking notification as read", error });
     }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
