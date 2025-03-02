@@ -113,22 +113,27 @@ function closeNotification() {
 
 async function markAllRead() {
     try {
-        const response = await fetch(`${API_URL}/read-all`, { method: "PUT" });
+        const response = await fetch(`${API_URL}/read-all`, { 
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+        });
+
         if (!response.ok) throw new Error("Failed to mark all as read");
 
-        
+        // ✅ Update UI: Change all unread items to read
         document.querySelectorAll("#notification-list li.unread").forEach((item) => {
             item.classList.remove("unread");
             item.innerHTML = "✅ " + item.textContent.substring(2);
         });
 
-        
-        updateNotificationCount();
+        // ✅ Update unread count
+        updateNotificationCount(0); 
 
     } catch (error) {
         console.error("Error marking all notifications as read:", error);
     }
 }
+
 
 
 
