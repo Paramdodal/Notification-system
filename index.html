@@ -10,6 +10,7 @@
 </head>
 <body>
 
+
     <nav class="navbar">
         <div class="logo">Notification</div>
         <div class="notification-container">
@@ -22,11 +23,13 @@
                     <span>Notifications</span>
                     <button onclick="markAllRead()">Mark all as read</button>
                 </div>
+                <input type="text" id="search-bar" placeholder="Search notifications..." oninput="searchNotifications()" />
                 <ul id="notification-list"></ul>
                 <button id="load-more" onclick="loadMore()">Load More</button> <!-- Load More Button -->
             </div>
             
     </nav>
+
 
 <div id="notification-modal" class="modal">
     <div class="modal-content">
