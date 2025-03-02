@@ -3,21 +3,16 @@ let currentPage = 1;
 const limit = 5;
 
 
-async function fetchNotifications(page = 1, append = false) {
+async function fetchNotifications(page = 1, append = false, searchQuery = "") {
     try {
-        console.log(`Fetching notifications for page ${page}...`);
-        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}`);
+        console.log(`Fetching notifications for page ${page}, search: ${searchQuery}`);
+        const response = await fetch(`${API_URL}?page=${page}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) throw new Error("Failed to fetch notifications");
 
         const result = await response.json();
-        console.log("Fetched data:", result);
-
         renderNotifications(result.data, append);
-
-        
         updateNotificationCount(result.unreadCount);
 
-        
         if (page * limit >= result.total) {
             document.getElementById("load-more").style.display = "none";
         } else {
@@ -27,7 +22,6 @@ async function fetchNotifications(page = 1, append = false) {
         console.error("Error fetching notifications:", error);
     }
 }
-
 
 function renderNotifications(notifications, append) {
     const notificationList = document.getElementById("notification-list");
@@ -56,8 +50,10 @@ function renderNotifications(notifications, append) {
     updateNotificationCount();
 }
 
-
-
+function searchNotifications() {
+    const searchQuery = document.getElementById("search-bar").value;
+    fetchNotifications(1, false, searchQuery); 
+}
 
 
 async function openNotification(notificationId, element) {
