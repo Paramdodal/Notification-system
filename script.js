@@ -17,6 +17,7 @@ async function fetchNotifications(page = 1, append = false) {
         
         updateNotificationCount(result.unreadCount);
 
+        
         if (page * limit >= result.total) {
             document.getElementById("load-more").style.display = "none";
         } else {
@@ -26,7 +27,6 @@ async function fetchNotifications(page = 1, append = false) {
         console.error("Error fetching notifications:", error);
     }
 }
-
 
 
 function renderNotifications(notifications, append) {
@@ -43,8 +43,13 @@ function renderNotifications(notifications, append) {
         li.textContent = (notification.status === "unread" ? "🔵 " : "✅ ") + notification.user + " " + notification.action;
         li.classList.add(notification.status);
         li.setAttribute("data-id", notification._id);
-        li.setAttribute("data-full-message", notification.fullMessage); 
-        li.onclick = () => openNotification(notification._id, li, notification.fullMessage); 
+        li.setAttribute("data-full-message", notification.fullMessage || "No details available");
+
+        
+        li.addEventListener("click", function () {
+            openNotification(notification._id, li);
+        });
+
         notificationList.appendChild(li);
     });
 
@@ -53,8 +58,27 @@ function renderNotifications(notifications, append) {
 
 
 
-async function openNotification(notificationId, element, fullMessage, openModal = true) {
+
+
+async function openNotification(notificationId, element) {
     try {
+        console.log("Opening notification:", notificationId);
+
+        
+        const fullMessage = element.getAttribute("data-full-message") || "No details available";
+
+       
+        const notificationMessage = document.getElementById("notification-message");
+        const notificationModal = document.getElementById("notification-modal");
+
+        if (!notificationMessage || !notificationModal) {
+            console.error("Modal elements not found");
+            return;
+        }
+
+        notificationMessage.textContent = fullMessage;
+        notificationModal.style.display = "flex"; 
+        
         const response = await fetch(`${API_URL}/${notificationId}/read`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" }
@@ -62,25 +86,18 @@ async function openNotification(notificationId, element, fullMessage, openModal 
 
         if (!response.ok) throw new Error("Failed to update notification");
 
+        console.log("Notification marked as read successfully");
+
+        
         element.classList.remove("unread");
         element.innerHTML = "✅ " + element.textContent.substring(2);
 
-        updateNotificationCount();
-
-        if (openModal) {
-            const notificationMessage = document.getElementById("notification-message");
-            const notificationModal = document.getElementById("notification-modal");
-
-            notificationMessage.textContent = fullMessage;
-            notificationModal.style.display = "flex";
-        }
+        updateNotificationCount(); 
 
     } catch (error) {
-        console.error("Error updating notification:", error);
+        console.error("Error opening notification:", error);
     }
 }
-
-
 
 
 function closeNotification() {
@@ -88,16 +105,19 @@ function closeNotification() {
 }
 
 
+
 async function markAllRead() {
     try {
         const response = await fetch(`${API_URL}/read-all`, { method: "PUT" });
         if (!response.ok) throw new Error("Failed to mark all as read");
 
+        
         document.querySelectorAll("#notification-list li.unread").forEach((item) => {
             item.classList.remove("unread");
             item.innerHTML = "✅ " + item.textContent.substring(2);
         });
 
+        
         updateNotificationCount();
 
     } catch (error) {
@@ -130,7 +150,7 @@ function updateNotificationCount(unreadCount) {
         countElement.textContent = unreadCount;
         countElement.style.display = "inline"; 
     } else {
-        countElement.style.display = "none"; 
+        countElement.style.display = "none";
     }
 }
 
@@ -141,6 +161,7 @@ document.addEventListener("click", function (event) {
     const icon = document.querySelector(".notification-icon");
     const modal = document.getElementById("notification-modal");
 
+    
     if (!icon.contains(event.target) && !dropdown.contains(event.target) && !modal.contains(event.target)) {
         dropdown.style.display = "none";
     }
@@ -151,6 +172,7 @@ document.addEventListener("click", function (event) {
 document.getElementById("notification-modal").addEventListener("click", function (event) {
     const modalContent = document.querySelector(".modal-content");
 
+    
     if (!modalContent.contains(event.target)) {
         closeNotification();
     }
