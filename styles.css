@@ -1,4 +1,4 @@
-
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -6,6 +6,7 @@
     font-family: Arial, sans-serif;
 }
 
+/* Navbar Styling */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -19,11 +20,13 @@
     z-index: 1000;
 }
 
+/* Logo */
 .logo {
     font-size: 1.5rem;
     font-weight: bold;
 }
 
+/* Notification Icon */
 .notification-container {
     position: relative;
     cursor: pointer;
@@ -84,11 +87,27 @@
 }
 
 .notification-dropdown .dropdown-header button {
-    background: none;
+    background: #4267B2; /* Facebook Blue */
+    color: white;
     border: none;
-    color: blue;
+    border-radius: 5px;
+    padding: 6px 12px;
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.notification-dropdown .dropdown-header button:hover {
+    background: #365899; /* Slightly darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+.notification-dropdown .dropdown-header button:active {
+    background: #2c5d9d;
+    transform: scale(0.95); /* Slightly shrink the button when clicked */
+}
+
 
 .unread {
     font-weight: bold;
@@ -198,7 +217,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #6c98ef; /* Facebook blue */
+    background-color: #4267B2; 
     padding: 10px 20px;
     color: white;
 }
@@ -223,7 +242,7 @@ body {
 }
 
 .notification-icon:hover {
-    color: #2c5d9d; 
+    color:#f9c805; 
 }
 
 
