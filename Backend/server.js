@@ -26,24 +26,32 @@ const Notification = mongoose.model("Notification", notificationSchema);
 
 app.get("/notifications", async (req, res) => {
     try {
-        let page = parseInt(req.query.page) || 1;
-        let limit = parseInt(req.query.limit) || 5;
-        let skip = (page - 1) * limit;
+        let { page = 1, limit = 5, search = "" } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
 
-        const total = await Notification.countDocuments(); 
+        const searchQuery = search
+            ? { $or: [
+                { user: { $regex: search, $options: "i" } },
+                { action: { $regex: search, $options: "i" } },
+                { fullMessage: { $regex: search, $options: "i" } }
+            ]}
+            : {};
+
+        const total = await Notification.countDocuments(searchQuery);
         const unreadCount = await Notification.countDocuments({ status: "unread" });
 
-        const notifications = await Notification.find()
-            .sort({ createdAt: -1 }) 
-            .skip(skip)
-            .limit(limit)
-            .select("user action fullMessage status createdAt"); 
+        const notifications = await Notification.find(searchQuery)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit);
 
         res.json({ total, unreadCount, page, limit, data: notifications });
     } catch (error) {
         res.status(500).json({ message: "Error fetching notifications", error });
     }
 });
+
 
 
 app.put("/notifications/:id/read", async (req, res) => {
