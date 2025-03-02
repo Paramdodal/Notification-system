@@ -14,9 +14,9 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 //  Schema
 const notificationSchema = new mongoose.Schema({
-    user: String, // e.g., "Aryan"
-    action: String, // e.g., "commented on your photo"
-    fullMessage: String, // e.g., "Aryan liked the photo and commented: 'Nice!'"
+    user: String, 
+    action: String, 
+    fullMessage: String, 
     status: { type: String, default: "unread" }, 
     createdAt: { type: Date, default: Date.now }
 });
@@ -35,8 +35,7 @@ app.get("/notifications", async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .select("user action fullMessage status createdAt"); // Fetch all necessary fields
-
+            .select("user action fullMessage status createdAt"); 
         res.json({ total, page, limit, data: notifications });
     } catch (error) {
         res.status(500).json({ message: "Error fetching notifications", error });
