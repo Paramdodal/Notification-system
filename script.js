@@ -28,7 +28,7 @@ async function fetchNotifications(page = 1, append = false) {
 
 function renderNotifications(notifications, append) {
     const notificationList = document.getElementById("notification-list");
-    if (!append) notificationList.innerHTML = ""; 
+    if (!append) notificationList.innerHTML = ""; // Clear the list if not appending
 
     if (notifications.length === 0) {
         notificationList.innerHTML = "<li>No new notifications</li>";
@@ -37,10 +37,11 @@ function renderNotifications(notifications, append) {
 
     notifications.forEach((notification) => {
         const li = document.createElement("li");
-        li.textContent = (notification.status === "unread" ? "🔵 " : "✅ ") + notification.message;
+        li.textContent = (notification.status === "unread" ? "🔵 " : "✅ ") + notification.user + " " + notification.action;
         li.classList.add(notification.status);
         li.setAttribute("data-id", notification._id);
-        li.onclick = () => openNotification(notification._id, li, notification.message);
+        li.setAttribute("data-full-message", notification.fullMessage); // Store full message in attribute
+        li.onclick = () => openNotification(notification._id, li, notification.fullMessage); // Pass fullMessage
         notificationList.appendChild(li);
     });
 
@@ -48,9 +49,9 @@ function renderNotifications(notifications, append) {
 }
 
 
-async function openNotification(notificationId, element, message) {
+
+async function openNotification(notificationId, element, fullMessage) {
     try {
-        
         const response = await fetch(`${API_URL}/${notificationId}/read`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" }
@@ -58,23 +59,24 @@ async function openNotification(notificationId, element, message) {
 
         if (!response.ok) throw new Error("Failed to update notification");
 
-        
+        // Update UI
         element.classList.remove("unread");
-        element.innerHTML = "✅ " + message;
+        element.innerHTML = "✅ " + element.textContent.substring(2);
 
         updateNotificationCount();
 
-        
+        // Show full message in modal
         const notificationMessage = document.getElementById("notification-message");
         const notificationModal = document.getElementById("notification-modal");
 
-        notificationMessage.textContent = message;
+        notificationMessage.textContent = fullMessage;
         notificationModal.style.display = "flex";
 
     } catch (error) {
         console.error("Error updating notification:", error);
     }
 }
+
 
 
 function closeNotification() {
