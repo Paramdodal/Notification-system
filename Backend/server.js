@@ -14,10 +14,13 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 //  Schema
 const notificationSchema = new mongoose.Schema({
-    message: String,
+    user: String, // e.g., "Aryan"
+    action: String, // e.g., "commented on your photo"
+    fullMessage: String, // e.g., "Aryan liked the photo and commented: 'Nice!'"
     status: { type: String, default: "unread" }, 
     createdAt: { type: Date, default: Date.now }
 });
+
 
 const Notification = mongoose.model("Notification", notificationSchema);
 
@@ -31,13 +34,15 @@ app.get("/notifications", async (req, res) => {
         const notifications = await Notification.find()
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .select("user action fullMessage status createdAt"); // Fetch all necessary fields
 
         res.json({ total, page, limit, data: notifications });
     } catch (error) {
         res.status(500).json({ message: "Error fetching notifications", error });
     }
 });
+
 
 
 app.put("/notifications/:id/read", async (req, res) => {
