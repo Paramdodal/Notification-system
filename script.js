@@ -69,21 +69,14 @@ async function openNotification(notificationId, element) {
     try {
         console.log("Opening notification:", notificationId);
 
-        
         const fullMessage = element.getAttribute("data-full-message") || "No details available";
+        document.getElementById("notification-message").textContent = fullMessage;
+        document.getElementById("notification-modal").style.display = "flex"; 
 
-       
-        const notificationMessage = document.getElementById("notification-message");
-        const notificationModal = document.getElementById("notification-modal");
+        // ✅ If the notification is already read, do nothing
+        if (!element.classList.contains("unread")) return;
 
-        if (!notificationMessage || !notificationModal) {
-            console.error("Modal elements not found");
-            return;
-        }
-
-        notificationMessage.textContent = fullMessage;
-        notificationModal.style.display = "flex"; 
-        
+        // ✅ Send request to backend to mark as read
         const response = await fetch(`${API_URL}/${notificationId}/read`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" }
@@ -93,17 +86,16 @@ async function openNotification(notificationId, element) {
 
         console.log("Notification marked as read successfully");
 
-        
         element.classList.remove("unread");
-        element.innerHTML = "✅ " + element.textContent.substring(2);
+        element.innerHTML = element.innerHTML.replace("🔵", "✅");
 
-        updateNotificationCount(); 
+        const unreadElements = document.querySelectorAll("#notification-list li.unread");
+        updateNotificationCount(unreadElements.length - 1);
 
     } catch (error) {
         console.error("Error opening notification:", error);
     }
 }
-
 
 function closeNotification() {
     document.getElementById("notification-modal").style.display = "none";
@@ -120,22 +112,19 @@ async function markAllRead() {
 
         if (!response.ok) throw new Error("Failed to mark all as read");
 
-        // ✅ Update UI: Change all unread items to read
+        console.log("All notifications marked as read successfully");
+
         document.querySelectorAll("#notification-list li.unread").forEach((item) => {
             item.classList.remove("unread");
-            item.innerHTML = "✅ " + item.textContent.substring(2);
+            item.innerHTML = item.innerHTML.replace("🔵", "✅");
         });
 
-        // ✅ Update unread count
-        updateNotificationCount(0); 
+        updateNotificationCount(0);
 
     } catch (error) {
         console.error("Error marking all notifications as read:", error);
     }
 }
-
-
-
 
 function loadMore() {
     currentPage++;
