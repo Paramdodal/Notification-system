@@ -53,6 +53,24 @@ app.get("/notifications", async (req, res) => {
 });
 
 
+app.put("/notifications/:id/read", async (req, res) => {
+    try {
+        const updatedNotification = await Notification.findByIdAndUpdate(
+            req.params.id,
+            { status: "read" },
+            { new: true }
+        );
+
+        if (!updatedNotification) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+
+        res.json({ message: "Notification marked as read", updatedNotification });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating notification", error });
+    }
+});
+
 app.put("/notifications/read-all", async (req, res) => {
     try {
         const updatedNotifications = await Notification.updateMany(
@@ -65,7 +83,6 @@ app.put("/notifications/read-all", async (req, res) => {
         res.status(500).json({ message: "Error marking all as read", error });
     }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
